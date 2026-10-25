@@ -1,65 +1,51 @@
-import { type NextPage } from "next";
+import {
+  type GetServerSideProps,
+  type InferGetServerSidePropsType,
+  type NextPage,
+} from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Github, Twitter } from "lucide-react";
 
 import { ChatGPTEditor } from "../sections/ChatGPTEditor";
 import { EncoderSelect } from "~/sections/EncoderSelect";
 import { TokenViewer } from "~/sections/TokenViewer";
 import { TextArea } from "~/components/Input";
-import {
-  encoding_for_model,
-  get_encoding,
-  type TiktokenModel,
-  type TiktokenEncoding,
-} from "@dqbd/tiktoken";
-import { getSegments } from "~/utils/segments";
+import { type AllOptions, isChatModel, isValidOption } from "~/models";
+import { createTokenizer } from "~/models/tokenizer";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 
-function getUserSelectedEncoder(
-  params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
-) {
-  if ("model" in params) {
-    if (
-      params.model === "gpt-4" ||
-      params.model === "gpt-4-32k" ||
-      params.model === "gpt-3.5-turbo"
-    ) {
-      return encoding_for_model(params.model, {
-        "<|im_start|>": 100264,
-        "<|im_end|>": 100265,
-        "<|im_sep|>": 100266,
-      });
-    }
+function useQueryParamsState() {
+  const router = useRouter();
 
-    return encoding_for_model(params.model);
-  }
+  const params = useMemo((): AllOptions => {
+    return isValidOption(router.query?.model)
+      ? router.query.model
+      : "gpt-4o";
+  }, [router.query]);
 
-  if ("encoder" in params) {
-    return get_encoding(params.encoder);
-  }
+  const setParams = (model: AllOptions) => {
+    router.push({
+      pathname: router.pathname,
+      query: { model },
+    });
+  };
 
-  throw new Error("Invalid params");
+  return [params, setParams] as const;
 }
 
-function isChatModel(
-  params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
-): params is { model: "gpt-3.5-turbo" | "gpt-4" | "gpt-4-32k" } {
-  return (
-    "model" in params &&
-    (params.model === "gpt-3.5-turbo" ||
-      params.model === "gpt-4" ||
-      params.model === "gpt-4-32k")
-  );
-}
-
-const Home: NextPage = () => {
+const Home: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = () => {
   const [inputText, setInputText] = useState<string>("");
-  const [params, setParams] = useState<
-    { model: TiktokenModel } | { encoder: TiktokenEncoding }
-  >({ model: "gpt-3.5-turbo" });
+  const [model, setModel] = useQueryParamsState();
+  const tokenizer = useQuery({
+    queryKey: [model],
+    queryFn: ({ queryKey: [model] }) => createTokenizer(model!),
+  });
 
-  const [encoder, setEncoder] = useState(() => getUserSelectedEncoder(params));
-  const data = getSegments(encoder, inputText);
+  const tokens = tokenizer.data?.tokenize(inputText);
 
   return (
     <>
@@ -72,26 +58,21 @@ const Home: NextPage = () => {
           <h1 className="text-4xl font-bold">Tiktokenizer</h1>
 
           <EncoderSelect
-            value={params}
+            value={model}
+            isLoading={tokenizer.isFetching}
             onChange={(update) => {
-              setEncoder((encoder) => {
-                encoder.free();
-                return getUserSelectedEncoder(update);
-              });
-
-              if (isChatModel(update) !== isChatModel(params)) {
+              setModel(update);
+              if (isChatModel(update) !== isChatModel(model)) {
                 setInputText("");
               }
-
-              setParams(update);
             }}
           />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <section className="flex flex-col gap-4">
-            {isChatModel(params) && (
-              <ChatGPTEditor model={params.model} onChange={setInputText} />
+            {isChatModel(model) && (
+              <ChatGPTEditor model={model} onChange={setInputText} />
             )}
 
             <TextArea
@@ -102,11 +83,7 @@ const Home: NextPage = () => {
           </section>
 
           <section className="flex flex-col gap-4">
-            <TokenViewer
-              model={"model" in params ? params.model : undefined}
-              data={data}
-              isFetching={false}
-            />
+            <TokenViewer model={model} data={tokens} isFetching={false} />
           </section>
         </div>
         <style jsx>
@@ -182,26 +159,12 @@ const Home: NextPage = () => {
           </div>
         </div>
       </main>
-      <script>
-      var _hmt = _hmt || [];
-      (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?3da8a7c744f7da562551ef3b97e3c2b9";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-      })();
-      </script>
-      <!-- Google tag (gtag.js) -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-XNE0W4ZLNF"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-XNE0W4ZLNF');
-      </script>
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return { props: { query: context.query } };
 };
 
 export default Home;

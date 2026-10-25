@@ -3,6 +3,7 @@ import { cn } from "~/utils/cn";
 
 import BN from "bignumber.js";
 import { Checkbox } from "~/components/Checkbox";
+import { type TokenizerResult } from "~/models/tokenizer";
 
 const COLORS = [
   "bg-sky-200",
@@ -26,12 +27,6 @@ const COLORS = [
   "bg-teal-200",
 ];
 
-const PRICING: Record<string, BN> = {
-  "gpt-4": BN("0.03").div(1000),
-  "gpt-4-32k": BN("0.03").div(1000),
-  "gpt-3.5-turbo": BN("0.002").div(1000),
-};
-
 function encodeWhitespace(str: string) {
   let result = str;
 
@@ -51,15 +46,12 @@ function encodeWhitespace(str: string) {
 export function TokenViewer(props: {
   isFetching: boolean;
   model: string | undefined;
-  data:
-    | Array<{ text: string; tokens: { id: number; idx: number }[] }>
-    | undefined;
+  data: TokenizerResult | undefined;
 }) {
   const [indexHover, setIndexHover] = useState<null | number>(null);
 
   const tokenCount =
-    props.data?.reduce((memo, i) => memo + i.tokens.length, 0) ?? 0;
-  const pricing = props.model != null ? PRICING[props.model] : undefined;
+    props.data?.segments?.reduce((memo, i) => memo + i.tokens.length, 0) ?? 0;
 
   const [showWhitespace, setShowWhitespace] = useState(false);
 
@@ -70,19 +62,10 @@ export function TokenViewer(props: {
           <p className="text-sm ">Token count</p>
           <p className="text-lg">{tokenCount}</p>
         </div>
-
-        {pricing != null && (
-          <div className="flex-grow rounded-md border bg-slate-50 p-4 shadow-sm">
-            <p className="text-sm ">Price per prompt</p>
-            <p className="text-lg">
-              ${pricing?.multipliedBy(tokenCount)?.toFixed()}
-            </p>
-          </div>
-        )}
       </div>
 
       <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm">
-        {props.data?.map(({ text }, idx) => (
+        {props.data?.segments?.map(({ text }, idx) => (
           <span
             key={idx}
             onMouseEnter={() => setIndexHover(idx)}
@@ -113,8 +96,7 @@ export function TokenViewer(props: {
               props.isFetching && "opacity-50"
             )}
           >
-            [
-            {props.data.map((segment, segmentIdx) => (
+            {props.data?.segments?.map((segment, segmentIdx) => (
               <Fragment key={segmentIdx}>
                 {segment.tokens.map((token) => (
                   <Fragment key={token.idx}>
@@ -134,7 +116,6 @@ export function TokenViewer(props: {
                 ))}
               </Fragment>
             ))}
-            ]
           </span>
         )}
       </pre>
