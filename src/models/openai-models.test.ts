@@ -36,16 +36,21 @@ suite("OpenAI model names match official tiktoken", () => {
 
   const resolveEncoding = (model: string): string | undefined =>
     tables.exact[model] ??
-    Object.entries(tables.prefix).find(([prefix]) => model.startsWith(prefix))?.[1];
+    Object.entries(tables.prefix).find(([prefix]) =>
+      model.startsWith(prefix)
+    )?.[1];
 
-  it.each(oaiModels.options)("%s resolves to the official encoding", (model) => {
-    const official = resolveEncoding(model);
-    expect(official, `${model} is unknown to tiktoken`).toBeDefined();
-    const tokenizer = new TiktokenTokenizer(model);
-    try {
-      expect(tokenizer.name).toBe(JS_ALIAS[official!] ?? official);
-    } finally {
-      tokenizer.free();
+  it.each(oaiModels.options)(
+    "%s resolves to the official encoding",
+    (model) => {
+      const official = resolveEncoding(model);
+      expect(official, `${model} is unknown to tiktoken`).toBeDefined();
+      const tokenizer = new TiktokenTokenizer(model);
+      try {
+        expect(tokenizer.name).toBe(JS_ALIAS[official!] ?? official);
+      } finally {
+        tokenizer.free();
+      }
     }
-  });
+  );
 });

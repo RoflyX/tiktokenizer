@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "tokenizers": "node scripts/tokenizers.mjs fetch",
-    "build": "yarn tokenizers && next build && next export",
+    "build": "yarn tokenizers && next build && next export && node scripts/seo-postbuild.mjs",
     "dev": "yarn tokenizers && next dev",
     "lint": "next lint",
     "test": "vitest run"
@@ -26,7 +26,7 @@
     "react-dom": "18.2.0",
     "tailwind-merge": "^1.10.0",
     "tailwindcss-animate": "^1.0.5",
-    "tiktoken": "1.0.22",
+    "tiktoken": "1.0.21",
     "zod": "^3.20.6"
   },
   "devDependencies": {

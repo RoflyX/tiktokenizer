@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tiktokenizer.chatgptcn.com/sitemap.xml

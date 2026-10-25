@@ -43,9 +43,10 @@ export class TiktokenTokenizer implements Tokenizer {
               "<|im_end|>": 200265,
               "<|im_sep|>": 200266,
             })
-          : model.startsWith("gpt-oss-")
-          ? // tiktoken (JS) has no o200k_harmony. Its ids for ordinary text equal o200k_base
-            // (checked against Python tiktoken 0.14.0); only the special tokens differ.
+          : model.startsWith("gpt-5") || model.startsWith("gpt-oss-")
+          ? // tiktoken 1.0.21 predates GPT-5, and 1.0.22 ships a wasm that this Next/webpack
+            // cannot parse. Official tables: gpt-5* -> o200k_base; gpt-oss-* -> o200k_harmony,
+            // which has no JS build but gives the same ids as o200k_base for ordinary text.
             get_encoding("o200k_base")
           : // @ts-expect-error r50k broken?
             encoding_for_model(model);
