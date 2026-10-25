@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useMemo, useState } from "react";
+import { type FormEvent, useMemo, useRef, useState } from "react";
 
 import { ChatGPTEditor } from "../sections/ChatGPTEditor";
 import { EncoderSelect } from "~/sections/EncoderSelect";
@@ -10,6 +10,7 @@ import { type AllOptions, isChatModel, isValidOption } from "~/models";
 import { createTokenizer } from "~/models/tokenizer";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
+import { trackEvent } from "~/utils/gtag";
 
 function useQueryParamsState() {
   const router = useRouter();
@@ -40,13 +41,24 @@ const Home: NextPage = () => {
 
   const tokens = tokenizer.data?.tokenize(inputText);
 
+  // Reports the first edit of any editor textarea once per visit; the text itself is never read.
+  const hasStartedTyping = useRef(false);
+  const onInput = (e: FormEvent<HTMLElement>) => {
+    if (hasStartedTyping.current || (e.target as HTMLElement).tagName !== "TEXTAREA") return;
+    hasStartedTyping.current = true;
+    trackEvent("start_typing", { model });
+  };
+
   return (
     <>
       <Head>
         <title>Tiktokenizer</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="mx-auto flex min-h-screen max-w-[1200px] flex-col gap-4 p-8">
+      <main
+        onInput={onInput}
+        className="mx-auto flex min-h-screen max-w-[1200px] flex-col gap-4 p-8"
+      >
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
           <h1 className="text-4xl font-bold">Tiktokenizer</h1>
 
@@ -54,6 +66,7 @@ const Home: NextPage = () => {
             value={model}
             isLoading={tokenizer.isFetching}
             onChange={(update) => {
+              trackEvent("select_model", { model: update });
               setModel(update);
               if (isChatModel(update) !== isChatModel(model)) {
                 setInputText("");
