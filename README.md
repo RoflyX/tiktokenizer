@@ -7,6 +7,7 @@
 ## 与上游的差异
 
 - 纯静态站（`next build && next export`），没有服务端渲染、API 路由和运行时密钥；去掉 tRPC、i18n 与 `@vercel/analytics`。
+- 开源模型的分词库用 [`@huggingface/tokenizers`](https://github.com/huggingface/tokenizers.js)（零依赖，约 8 kB gzip），替换了 `@xenova/transformers`：后者无法加载 Qwen3、GLM-4.5 的 `tokenizer.json`。片段切分（页面上的彩色分段与 token 计数）已重写，线性时间，且每个 token 恰好属于一个片段。
 - 开源模型分词器由 [`tokenizers.json`](tokenizers.json) 固定：每个模型记录 Hugging Face 的 `revision`（40 位 commit）、许可证、文件大小和 `sha256`。构建时 `scripts/tokenizers.mjs fetch` 按清单下载并校验，不需要 `HF_API_KEY`；哈希不符则构建失败。
 - 只收录无门槛、许可证为 MIT 或 Apache-2.0 的分词器。需要授权或许可证非宽松的模型（Llama、CodeLlama、Gemma、Qwen2.5-72B 等）不在站内分发。
 
@@ -22,6 +23,19 @@ yarn build      # 生成静态站点到 out/
 ```
 
 `public/hf/` 与 `out/` 是构建产物，已被 `.gitignore` 忽略。
+
+### 与 Python 对照
+
+`src/models/parity.test.ts` 把页面实际使用的分词器与 Python 的 `tiktoken`、`tokenizers` 逐条比对：token id 完全一致，页面显示的计数等于 token 数，片段能还原输入，并限制 20,000 个汉字的耗时。语料不入库，需要自己抽样生成：
+
+```bash
+python3 -m venv /tmp/venv && /tmp/venv/bin/pip install tiktoken tokenizers
+yarn tokenizers
+/tmp/venv/bin/python scripts/parity.py --out /tmp/parity --src <含中英文与代码的目录...>
+PARITY_DIR=/tmp/parity yarn test src/models/parity.test.ts
+```
+
+未设置 `PARITY_DIR` 时该测试自动跳过。
 
 ## 增加或更新开源模型
 
