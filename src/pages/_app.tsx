@@ -1,16 +1,16 @@
 import { type AppType } from "next/app";
+import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { api } from "~/utils/api";
-import { Analytics } from "@vercel/analytics/react";
 import "~/styles/globals.css";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
+  const [queryClient] = useState(() => new QueryClient());
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Component {...pageProps} />
-      <Analytics />
-    </>
+    </QueryClientProvider>
   );
 };
 
-export default api.withTRPC(MyApp);
+export default MyApp;

@@ -66,36 +66,17 @@ export const oaiModels = z.enum([
   ...embeddingModels.options,
 ]);
 
+// Must match the repos pinned in tokenizers.json (enforced by models.test.ts).
+// Only ungated MIT / Apache-2.0 tokenizers are vendored, see scripts/tokenizers.mjs.
 export const openSourceModels = z.enum([
-  // "meta-llama/Llama-2-7b-hf",
-  "codellama/CodeLlama-7b-hf",
-  "codellama/CodeLlama-70b-hf",
-  "meta-llama/Meta-Llama-3-8B",
-  "meta-llama/Meta-Llama-3-70B",
-  "microsoft/phi-2",
-  "google/gemma-7b",
   "deepseek-ai/DeepSeek-R1",
-  "Qwen/Qwen2.5-72B",
-  // "mistralai/Mistral-7B-v0.1",
+  "Qwen/Qwen3-8B",
+  "Qwen/Qwen2.5-7B",
+  "zai-org/GLM-4.5",
+  "microsoft/phi-2",
   "tiiuae/falcon-7b",
   "01-ai/Yi-6B",
   "openai/whisper-tiny",
-]);
-
-export function tempLlama3HackGetRevision(model: AllModels): string {
-  if (model === "meta-llama/Meta-Llama-3-8B") {
-    return "refs/pr/35";
-  } else if (model === "meta-llama/Meta-Llama-3-70B") {
-    return "refs/pr/5";
-  } else {
-    return "main";
-  }
-}
-
-export const hackModelsRemoveFirstToken = z.enum([
-  "meta-llama/Llama-2-7b-hf",
-  "codellama/CodeLlama-7b-hf",
-  "codellama/CodeLlama-70b-hf",
 ]);
 
 export const allModels = z.enum([
@@ -115,11 +96,12 @@ export type AllOptions = z.infer<typeof allOptions>;
 export const MODELS = allModels.options;
 
 export const POPULAR: z.infer<typeof allOptions>[] = [
-  "cl100k_base",
+  "gpt-4o",
   "o200k_base",
-  "gpt-4-1106-preview",
+  "cl100k_base",
   "gpt-3.5-turbo",
-  "codellama/CodeLlama-7b-hf",
+  "deepseek-ai/DeepSeek-R1",
+  "Qwen/Qwen3-8B",
 ];
 
 export function isChatModel(

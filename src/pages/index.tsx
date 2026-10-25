@@ -1,8 +1,4 @@
-import {
-  type GetServerSideProps,
-  type InferGetServerSidePropsType,
-  type NextPage,
-} from "next";
+import { type NextPage } from "next";
 import Head from "next/head";
 import { useMemo, useState } from "react";
 import { Github, Twitter } from "lucide-react";
@@ -35,9 +31,7 @@ function useQueryParamsState() {
   return [params, setParams] as const;
 }
 
-const Home: NextPage<
-  InferGetServerSidePropsType<typeof getServerSideProps>
-> = () => {
+const Home: NextPage = () => {
   const [inputText, setInputText] = useState<string>("");
   const [model, setModel] = useQueryParamsState();
   const tokenizer = useQuery({
@@ -161,10 +155,6 @@ const Home: NextPage<
       </main>
     </>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return { props: { query: context.query } };
 };
 
 export default Home;

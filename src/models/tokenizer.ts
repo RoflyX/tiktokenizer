@@ -1,4 +1,3 @@
-import { hackModelsRemoveFirstToken } from "./index";
 import { get_encoding, encoding_for_model, type Tiktoken } from "tiktoken";
 import { oaiEncodings, oaiModels, openSourceModels } from ".";
 import { PreTrainedTokenizer, env } from "@xenova/transformers";
@@ -29,7 +28,6 @@ export class TiktokenTokenizer implements Tokenizer {
   constructor(model: z.infer<typeof oaiModels> | z.infer<typeof oaiEncodings>) {
     const isModel = oaiModels.safeParse(model);
     const isEncoding = oaiEncodings.safeParse(model);
-    console.log(isModel.success, isEncoding.success, model)
     if (isModel.success) {
 
       if (
@@ -93,6 +91,8 @@ export class OpenSourceTokenizer implements Tokenizer {
     if (typeof window !== "undefined") {
       env.remoteHost = window.location.origin;
     }
+    // Tokenizer files are vendored under /hf at build time (see tokenizers.json).
+    env.allowLocalModels = false;
     env.remotePathTemplate = "/hf/{model}";
     // Set to false for testing!
     // env.useBrowserCache = false;
@@ -107,13 +107,10 @@ export class OpenSourceTokenizer implements Tokenizer {
   tokenize(text: string): TokenizerResult {
     // const tokens = this.tokenizer(text);
     const tokens = this.tokenizer.encode(text);
-    const removeFirstToken = (
-      hackModelsRemoveFirstToken.options as string[]
-    ).includes(this.name);
     return {
       name: this.name,
       tokens,
-      segments: getHuggingfaceSegments(this.tokenizer, text, removeFirstToken),
+      segments: getHuggingfaceSegments(this.tokenizer, text),
       count: tokens.length,
     };
   }

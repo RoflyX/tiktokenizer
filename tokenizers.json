@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "models": [
+    {
+      "repo": "deepseek-ai/DeepSeek-R1",
+      "revision": "56d4cbbb4d29f4355bab4b9a39ccb717a14ad5ad",
+      "license": "mit",
+      "files": {
+        "tokenizer.json": {
+          "sha256": "ecb6f9fc369894346f0511f4074ca75cee5cd5f3b06d02f1ba35fcd39f8e121d",
+          "bytes": 7847602
+        },
+        "tokenizer_config.json": {
+          "sha256": "99e80c96269ca4430f1e67f67b5766cb096cbac96fed7a7c611c6ee088b3a039",
+          "bytes": 3594
+        }
+      }
+    },
+    {
+      "repo": "Qwen/Qwen2.5-7B",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "license": "apache-2.0",
+      "files": {
+        "tokenizer.json": {
+          "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+          "bytes": 7031645
+        },
+        "tokenizer_config.json": {
+          "sha256": "c91efca15ceff6e9ee9424db58a6f59cd41294e550a86cbd07e3c1fb500b34f9",
+          "bytes": 7228
+        }
+      }
+    },
+    {
+      "repo": "Qwen/Qwen3-8B",
+      "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+      "license": "apache-2.0",
+      "files": {
+        "tokenizer.json": {
+          "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+          "bytes": 11422654
+        },
+        "tokenizer_config.json": {
+          "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+          "bytes": 9732
+        }
+      }
+    },
+    {
+      "repo": "zai-org/GLM-4.5",
+      "revision": "cbb2c7cfb52fa128a9660cb1a7a78e017899e115",
+      "license": "mit",
+      "files": {
+        "tokenizer.json": {
+          "sha256": "9340665016419c825c4bdabbcc9acc43b7ca2c68ce142724afa829abb1be5efd",
+          "bytes": 19970699
+        },
+        "tokenizer_config.json": {
+          "sha256": "27d01309c0ae7b5edb6511daabfcbf772b60e21c65cbb74d059acc76796f7897",
+          "bytes": 7307
+        }
+      }
+    },
+    {
+      "repo": "microsoft/phi-2",
+      "revision": "810d367871c1d460086d9f82db8696f2e0a0fcd0",
+      "license": "mit",
+      "files": {
+        "tokenizer.json": {
+          "sha256": "337da36be7a71a6e88aa9148967a7bc8736f4b47c7de8e19ba92b89e80734cfc",
+          "bytes": 2114924
+        },
+        "tokenizer_config.json": {
+          "sha256": "1906c7514a738bd743a05d7d95c8e9aeddb4d8c9ffdda4fb6ee05653fb6b97c4",
+          "bytes": 7339
+        }
+      }
+    },
+    {
+      "repo": "tiiuae/falcon-7b",
+      "revision": "ec89142b67d748a1865ea4451372db8313ada0d8",
+      "license": "apache-2.0",
+      "files": {
+        "tokenizer.json": {
+          "sha256": "d6c5cdac1421ea998722aa88ea1cb630b2a9ec63bf8a85331bb3d9d321507186",
+          "bytes": 2734130
+        },
+        "tokenizer_config.json": {
+          "sha256": "956d99c7b9a195e5c3eea5074cb3571b761282f2e621d804817b86dbcf6e2385",
+          "bytes": 287
+        }
+      }
+    },
+    {
+      "repo": "01-ai/Yi-6B",
+      "revision": "80080be87ec5a0103f643195f2d9003b8068941b",
+      "license": "apache-2.0",
+      "files": {
+        "tokenizer.json": {
+          "sha256": "a13ccc285aea27f5e9a98d40e04e330b01d89db6de7af10b013f56eec8eae8a2",
+          "bytes": 3602758
+        },
+        "tokenizer_config.json": {
+          "sha256": "80261d812f5b1bfff14b038e71c4ed36adc14b4e44d8e688817dcd8fed9bb8f3",
+          "bytes": 320
+        }
+      }
+    },
+    {
+      "repo": "openai/whisper-tiny",
+      "revision": "169d4a4341b33bc18d8881c4b69c2e104e1cc0af",
+      "license": "apache-2.0",
+      "files": {
+        "tokenizer.json": {
+          "sha256": "27fc476bfe7f17299480be2273fc0608e4d5a99aba2ab5dec5374b4482d1a566",
+          "bytes": 2480466
+        },
+        "tokenizer_config.json": {
+          "sha256": "2a4c4281cf9f51ac6ccc406fdc711a087afe6530f671fa7b80953edc498275ce",
+          "bytes": 282683
+        }
+      }
+    }
+  ]
+}
