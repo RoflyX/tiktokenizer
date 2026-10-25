@@ -4,9 +4,10 @@
 
 Needs `pip install tiktoken tokenizers`. Run `yarn tokenizers` first so that
 public/hf holds the pinned tokenizer files. Writes corpus.json (texts) and
-expected.json (ids per encoding or model); then run
+expected.json (ids per encoding or model) and openai-models.json (official tiktoken
+model-name tables); then run
 
-  PARITY_DIR=/tmp/parity yarn test src/models/parity.test.ts
+  PARITY_DIR=/tmp/parity yarn test src/models
 
 The corpus is sampled from the given source directories and is deliberately not
 committed; any multilingual text and code works.
@@ -75,6 +76,18 @@ def main():
         tok = Tokenizer.from_file(str(ROOT / "public" / "hf" / model["repo"] / "tokenizer.json"))
         expected[model["repo"]] = [tok.encode(t).ids for t in texts]
 
+    # Official model-name tables, used by src/models/openai-models.test.ts.
+    from tiktoken import model as tk_model
+
+    (out / "openai-models.json").write_text(
+        json.dumps(
+            {
+                "tiktoken": tiktoken.__version__,
+                "exact": tk_model.MODEL_TO_ENCODING,
+                "prefix": tk_model.MODEL_PREFIX_TO_ENCODING,
+            }
+        )
+    )
     (out / "corpus.json").write_text(json.dumps(texts, ensure_ascii=False))
     (out / "expected.json").write_text(json.dumps(expected))
     print(f"texts={len(texts)} (long CJK chars={len(long_cjk)}) targets={list(expected)}")

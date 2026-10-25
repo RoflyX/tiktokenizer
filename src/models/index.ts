@@ -19,6 +19,26 @@ export const chatModels = z.enum([
   "gpt-4-1106-preview",
 ]);
 
+// Names resolved by the official tiktoken tables (see openai-models.test.ts): exact entries
+// such as gpt-5 / gpt-4.1 / o1 / o3 / o4-mini and prefix entries such as gpt-4o-, o1-, gpt-oss-.
+export const modernModels = z.enum([
+  "gpt-5",
+  "gpt-5-mini",
+  "gpt-5-nano",
+  "gpt-4.1",
+  "gpt-4.1-mini",
+  "gpt-4.1-nano",
+  "gpt-4o-mini",
+  "chatgpt-4o-latest",
+  "o1",
+  "o1-mini",
+  "o3",
+  "o3-mini",
+  "o4-mini",
+  "gpt-oss-120b",
+  "gpt-oss-20b",
+]);
+
 export const legacyTextModels = z.enum([
   "text-davinci-003",
   "text-davinci-002",
@@ -61,6 +81,7 @@ export const legacyEmbeddingModels = z.enum([
 
 export const oaiModels = z.enum([
   ...chatModels.options,
+  ...modernModels.options,
   ...legacyTextModels.options,
   ...legacyEmbeddingModels.options,
   ...embeddingModels.options,
@@ -96,6 +117,7 @@ export type AllOptions = z.infer<typeof allOptions>;
 export const MODELS = allModels.options;
 
 export const POPULAR: z.infer<typeof allOptions>[] = [
+  "gpt-5",
   "gpt-4o",
   "o200k_base",
   "cl100k_base",

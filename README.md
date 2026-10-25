@@ -33,10 +33,10 @@ yarn build      # 生成静态站点到 out/
 python3 -m venv /tmp/venv && /tmp/venv/bin/pip install tiktoken tokenizers
 yarn tokenizers
 /tmp/venv/bin/python scripts/parity.py --out /tmp/parity --src <含中英文与代码的目录...>
-PARITY_DIR=/tmp/parity yarn test src/models/parity.test.ts
+PARITY_DIR=/tmp/parity yarn test src/models
 ```
 
-未设置 `PARITY_DIR` 时该测试自动跳过。
+未设置 `PARITY_DIR` 时这些对照自动跳过。`src/models/openai-models.test.ts` 另外保证：列出的每个 OpenAI 模型名都能分词，并且与官方 `tiktoken` 的模型名表（先精确匹配，再按前缀）解析到同一个编码。`gpt-oss-*` 官方用 `o200k_harmony`，JS 版 `tiktoken` 没有该编码，这里用 `o200k_base`：二者对普通文本的 token id 完全相同（1229 条样本 0 差异），只有 `<|start|>`、`<|channel|>` 等特殊 token 不同。
 
 ## 增加或更新开源模型
 

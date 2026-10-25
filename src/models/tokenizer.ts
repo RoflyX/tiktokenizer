@@ -30,13 +30,6 @@ export class TiktokenTokenizer implements Tokenizer {
     const isEncoding = oaiEncodings.safeParse(model);
     if (isModel.success) {
 
-      if (
-        model === "text-embedding-3-small" ||
-        model === "text-embedding-3-large"
-      ) {
-        throw new Error("Model may be too new");
-      }
-
       const enc =
         model === "gpt-3.5-turbo" || model === "gpt-4" || model === "gpt-4-32k"
           ? get_encoding("cl100k_base", {
@@ -50,6 +43,10 @@ export class TiktokenTokenizer implements Tokenizer {
               "<|im_end|>": 200265,
               "<|im_sep|>": 200266,
             })
+          : model.startsWith("gpt-oss-")
+          ? // tiktoken (JS) has no o200k_harmony. Its ids for ordinary text equal o200k_base
+            // (checked against Python tiktoken 0.14.0); only the special tokens differ.
+            get_encoding("o200k_base")
           : // @ts-expect-error r50k broken?
             encoding_for_model(model);
       this.name = enc.name ?? model;
