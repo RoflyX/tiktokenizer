@@ -1,6 +1,6 @@
 import { type AppType } from "next/app";
 import Script from "next/script";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "~/styles/globals.css";
@@ -11,9 +11,13 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const [queryClient] = useState(() => new QueryClient());
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
+  useEffect(() => {
+    setAnalyticsEnabled(window.location.hostname === "tiktokenizer.chatgptcn.com");
+  }, []);
   return (
     <QueryClientProvider client={queryClient}>
-      {GA_ID && ANALYTICS_ENABLED && (
+      {GA_ID && ANALYTICS_ENABLED && analyticsEnabled && (
         <>
           <Script
             src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}

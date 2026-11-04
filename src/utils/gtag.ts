@@ -20,6 +20,7 @@ export const ANALYTICS_ENABLED =
   process.env.NODE_ENV === "production" && isValidGaId(configuredId);
 
 export function trackEvent(name: string, params: Record<string, string | number> = {}) {
-  if (!ANALYTICS_ENABLED || typeof window === "undefined") return;
+  if (!ANALYTICS_ENABLED || typeof window === "undefined" ||
+      window.location.hostname !== "tiktokenizer.chatgptcn.com") return;
   window.gtag?.("event", name, params);
 }
