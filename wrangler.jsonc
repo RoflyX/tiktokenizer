@@ -4,5 +4,11 @@
   "assets": {
     "directory": "./out",
     "not_found_handling": "404-page"
-  }
+  },
+  "routes": [
+    {
+      "pattern": "tiktokenizer.chatgptcn.com/*",
+      "zone_id": "a1495c623493b78291ca1410d28bb2e8"
+    }
+  ]
 }
