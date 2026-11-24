@@ -39,20 +39,51 @@ function encodingContent(entry: LandingEntry, facts: PageFacts): PageContent {
       "gpt-oss models officially use o200k_harmony. It produces the same token ids as o200k_base for ordinary text (checked on more than 1,000 sample texts); only special tokens such as <|start|> and <|channel|> differ."
     );
   }
+  const faq: FaqItem[] = [
+    {
+      q: `What is ${entry.name}?`,
+      a: `${entry.name} is one of the encodings shipped with OpenAI's tiktoken. It turns text into integer token ids; language models read and are billed by tokens, not characters.`,
+    },
+    {
+      q: `Which models use ${entry.name}?`,
+      a: `According to tiktoken's model name table: ${formatList(
+        models
+      )}. Choose any of them in the selector above to see the same encoding.`,
+    },
+  ];
+  if (facts.mixed) {
+    faq.push(
+      {
+        q: `How many tokens is a mixed Chinese-English sentence in ${entry.name}?`,
+        a: `This reproducible sample is ${facts.mixed.text.length} characters and encodes to ${facts.mixed.tokens} tokens, counted at build time with the same tiktoken build this page runs. The count is a property of this exact string under ${entry.name} — paste it into the counter above to see the same number and how the text splits:`,
+        code: `text = "${facts.mixed.text}"
+
+# Python
+import tiktoken
+enc = tiktoken.get_encoding("${entry.name}")
+print(len(enc.encode(text)))  # ${facts.mixed.tokens}`,
+      },
+      {
+        q: "How do I choose the right encoding?",
+        a: `Start from the model you call, not from the encoding: tiktoken's encoding_for_model() resolves the model name through the same table that maps ${formatList(
+          models.slice(0, 4)
+        )} and friends to ${entry.name}. If you do not know the exact model, tokenize with the encoding its API documents and treat the response's usage field as the billing truth:`,
+        code: `# Python
+import tiktoken
+enc = tiktoken.encoding_for_model("gpt-4")  # -> cl100k_base
+print(enc.name)`,
+      },
+      {
+        q: "What is the difference between text tokens and message overhead?",
+        a: `This page counts plain-text BPE tokens for exactly the string you paste, with no chat formatting. A Chat API reports usage for the concrete request it received, with each message wrapped in the request's own formatting, so the two numbers describe different scopes rather than one being a correction of the other. To observe the gap, send this exact sample as a single user message to the same model you picked here and compare usage.prompt_tokens with the ${facts.mixed.tokens} shown above. The difference changes with request shape and model — an observation of that request, not a fixed per-message overhead.`,
+      }
+    );
+  }
   return {
     heading: `${entry.name} Tokenizer`,
     intro,
     faq: [
-      {
-        q: `What is ${entry.name}?`,
-        a: `${entry.name} is one of the encodings shipped with OpenAI's tiktoken. It turns text into integer token ids; language models read and are billed by tokens, not characters.`,
-      },
-      {
-        q: `Which models use ${entry.name}?`,
-        a: `According to tiktoken's model name table: ${formatList(
-          models
-        )}. Choose any of them in the selector above to see the same encoding.`,
-      },
+      ...faq,
       {
         q: `How do I count ${entry.name} tokens in code?`,
         a: "With OpenAI's tiktoken, which has Python and JavaScript (WASM) builds:",

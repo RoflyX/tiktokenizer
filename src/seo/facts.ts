@@ -22,8 +22,14 @@ export const SAMPLES = [
   { label: "Code", text: "def add(a, b):\n    return a + b" },
 ] as const;
 
+/** Reproducible mixed-input sample, shown on the cl100k_base page only. */
+export const MIXED_SAMPLE =
+  "用 GPT-4 处理中文时，每个汉字通常是 1 到 2 个 token，而英文单词往往只需 1 个 token。";
+
 export interface PageFacts {
   samples: { label: string; text: string; tokens: number }[];
+  /** cl100k_base only: token count of MIXED_SAMPLE, computed at build time. */
+  mixed?: { text: string; tokens: number };
   /** OpenAI encodings only: approximate vocabulary size, in thousands. */
   vocabK?: number;
   /** OpenAI model pages only: encoding the model resolves to. */
@@ -84,6 +90,13 @@ export function computeFacts(entry: LandingEntry): PageFacts {
         tokens: tokenizer.tokenize(s.text).count,
       })),
     };
+
+    if (entry.option === "cl100k_base") {
+      facts.mixed = {
+        text: MIXED_SAMPLE,
+        tokens: tokenizer.tokenize(MIXED_SAMPLE).count,
+      };
+    }
 
     const encoding = oaiEncodings.safeParse(entry.option);
     if (encoding.success) {
